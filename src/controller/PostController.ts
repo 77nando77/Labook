@@ -11,7 +11,6 @@ export class PostController {
             const input = {
                 q: req.query.q
             }
-
             const output = await this.postBusiness.getPosts(input)
 
             res.status(200).send(output)
