@@ -3,10 +3,10 @@
 CREATE TABLE users (
     id TEXT PRIMARY KEY UNIQUE NOT NULL,
     name TEXT NOT NULL,
-    email TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
-    role TEXT DEFAULT "Usuário" NOT NULL,
-    created_at TEXT DEFAULT(DATETIME())
+    role TEXT NOT NULL,
+    created_at TEXT DEFAULT(DATETIME()) NOT NULL
 );
 
 CREATE TABLE posts (
@@ -28,11 +28,11 @@ CREATE TABLE likes_dislikes (
     FOREIGN KEY (post_id) REFERENCES posts(id)
 );
 
-INSERT INTO users (id,name,email,password)
+INSERT INTO users (id,name,email,password, role)
 VALUES
-    ("u001", "Luiz", "luiz@email.com","1234"),
-    ("u002", "Gustavo", "gustavo@email.com","4321"),
-    ("u003", "Marlene", "marlene@email.com","6789");
+    ("u001", "Luiz", "luiz@email.com","1234", "NORMAL"),
+    ("u002", "Gustavo", "gustavo@email.com","4321", "NORMAL"),
+    ("u003", "Marlene", "marlene@email.com","$2a$12$mgdLQEvyJnyHRm7L1zeSI.TbvtZ7e2HGw31rF7DWX5KtpgNGXzbsS", "ADMIN");
 
 INSERT INTO posts(id, creator_id, content, likes, dislikes)
 VALUES
@@ -52,4 +52,6 @@ SELECT * FROM posts;
 
 SELECT * FROM users;
 
+DROP TABLE users;
 DROP TABLE likes_dislikes;
+DROP TABLE posts;
