@@ -1,4 +1,4 @@
-import { USER_ROLE } from "../types";
+import { PostDB, PostsDB, USER_ROLE } from "../types";
 
 export class Post {
     constructor(
@@ -27,43 +27,56 @@ export class Post {
         this.creator_id = creatorId
     }
 
-    public getContent():string{
+    public getContent(): string {
         return this.content
     }
 
-    public setContent(content:string):void{
+    public setContent(content: string): void {
         this.content = content
     }
 
-    public getLikes():number{
+    public getLikes(): number {
         return this.likes
     }
 
-    public setLikes(likes:number):void{
+    public setLikes(likes: number): void {
         this.likes = likes
     }
 
-    public getDislikes():number{
+    public getDislikes(): number {
         return this.dislikes
     }
 
-    public setDislikes(dislikes:number):void{
+    public setDislikes(dislikes: number): void {
         this.dislikes = dislikes
     }
 
-    public getCreatedAt():string{
+    public getCreatedAt(): string {
         return this.created_at
     }
 
-    public setCreatedAt(createdAT:string):void{
+    public setCreatedAt(createdAT: string): void {
         this.created_at = createdAT
     }
 
-    public getUpdatedAt():string{
+    public getUpdatedAt(): string {
         return this.updated_at
     }
 
-    public setUpdatedAt(updatedAt: string):void{
+    public setUpdatedAt(updatedAt: string): void {
         this.updated_at = updatedAt
     }
+
+    public toDBModel(): PostsDB {
+        return {
+            id: this.id,
+            creator_id: this.creator_id,
+            content: this.content,
+            likes: this.likes,
+            dislikes: this.dislikes,
+            created_at: this.created_at,
+            updated_at: this.updated_at
+        }
+    }
+
 }

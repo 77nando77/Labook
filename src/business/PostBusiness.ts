@@ -1,28 +1,76 @@
 import { PostDatabase } from "../database/PostDatabase";
-import { Post } from "../models/post";
+import { CreateInput, CreateOutput, GetPostInput } from "../dtos/postDTO";
+import { BadRequestError } from "../errors/BadRequestError";
+import { Post } from "../models/Post";
+import { IdGenerator } from "../services/IdGeneretor";
+import { TokenManager } from "../services/TokenManager";
 
 export class PostBusiness {
     constructor(
-        private postDatabase: PostDatabase
-    ) {}
+        private postDatabase: PostDatabase,
+        private idGenerator: IdGenerator,
+        private tokenManager: TokenManager
+    ) { }
 
-    public getPosts = async (input: any) => {
-        const { q } = input
+    public getPosts = async (input: GetPostInput) => {
+        const { q, token } = input
 
-        const postsDB = await this.postDatabase.findPosts(q)
+        if (typeof q !== "string" && q !== undefined) {
+            throw new Error("'q' deve ser string ou undefined")
+        }
 
-        const posts: Post[] = postsDB.map((postDB) =>
-            new Post(
-                postDB.id,
-                postDB.creator_id,
-                postDB.content,
-                postDB.likes,
-                postDB.dislikes,
-                postDB.created_at,
-                postDB.updated_at
-            )
-        )
+        if (typeof token !== "string") {
+            throw new BadRequestError("token esta vazio")
+        }
 
-        return posts
+        const payload = this.tokenManager.getPayload(token)
+
+        if (payload === null) {
+            throw new BadRequestError("Token não é valido")
+        }
+
+        return await this.postDatabase.findPosts(q)
     }
+
+    public createPost = async (input: CreateInput): Promise <CreateOutput> => {
+        const { content, token } = input
+
+        if (typeof content !== "string") {
+            throw new BadRequestError("Content tem que ser uma string");
+        }
+
+        if (!token) {
+            throw new BadRequestError("Token não é valido");
+        }
+
+
+
+        const payload = this.tokenManager.getPayload(token)
+
+
+        if (payload) {
+            const id = this.idGenerator.generate()
+
+            const newPost= new Post (
+                id,
+                payload.id,
+                content,
+                0,
+                0,
+                new Date().toISOString(),
+                new Date().toISOString(),
+            )
+
+            const postDB = newPost.toDBModel()
+            await this.postDatabase.insertPost(postDB)
+
+        }
+        const output: CreateOutput = {
+            content
+        }
+
+        return output
+
+    }
+
 }
